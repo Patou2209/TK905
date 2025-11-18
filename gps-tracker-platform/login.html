@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - TechnoWeb GPS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>TechnoWeb GPS</h1>
+                <p>Plateforme de suivi GPS TK905</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <h2>Connexion</h2>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="votre@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+
+                <div id="loginError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="loginBtnText">Se connecter</span>
+                    <span id="loginLoader" class="loader" style="display: none;"></span>
+                </button>
+
+                <p class="auth-switch">
+                    Pas encore de compte ? 
+                    <a href="#" id="showRegister">Créer un compte</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <h2>Créer un compte</h2>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required placeholder="votre@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+                    <small>Minimum 6 caractères</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmer le mot de passe</label>
+                    <input type="password" id="registerPasswordConfirm" required placeholder="••••••••">
+                </div>
+
+                <div id="registerError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="registerBtnText">Créer mon compte</span>
+                    <span id="registerLoader" class="loader" style="display: none;"></span>
+                </button>
+
+                <p class="auth-switch">
+                    Déjà un compte ? 
+                    <a href="#" id="showLogin">Se connecter</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Toggle between login and register forms
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+
+        // Handle Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const btnText = document.getElementById('loginBtnText');
+            const loader = document.getElementById('loginLoader');
+
+            // Show loader
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            errorDiv.style.display = 'none';
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                // Redirect handled by auth state observer
+            } catch (error) {
+                errorDiv.textContent = getErrorMessage(error.code);
+                errorDiv.style.display = 'block';
+                btnText.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Handle Register
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+            const errorDiv = document.getElementById('registerError');
+            const btnText = document.getElementById('registerBtnText');
+            const loader = document.getElementById('registerLoader');
+
+            // Check password match
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Les mots de passe ne correspondent pas.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Show loader
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            errorDiv.style.display = 'none';
+
+            try {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+                // Redirect handled by auth state observer
+            } catch (error) {
+                errorDiv.textContent = getErrorMessage(error.code);
+                errorDiv.style.display = 'block';
+                btnText.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        function getErrorMessage(code) {
+            switch (code) {
+                case 'auth/email-already-in-use':
+                    return 'Cet email est déjà utilisé.';
+                case 'auth/invalid-email':
+                    return 'Email invalide.';
+                case 'auth/weak-password':
+                    return 'Mot de passe trop faible.';
+                case 'auth/user-not-found':
+                    return 'Utilisateur introuvable.';
+                case 'auth/wrong-password':
+                    return 'Mot de passe incorrect.';
+                default:
+                    return 'Une erreur est survenue. Veuillez réessayer.';
+            }
+        }
+    </script>
+</body>
+</html>

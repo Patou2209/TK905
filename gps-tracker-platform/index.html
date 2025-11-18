@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechnoWeb GPS Tracker</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar sidebar-expanded">
+            <!-- Header -->
+            <div class="sidebar-header">
+                <button id="toggleSidebar" class="icon-btn">
+                    <i data-lucide="menu"></i>
+                </button>
+                <h1 class="sidebar-title">TechnoWeb GPS</h1>
+            </div>
+
+            <!-- User Info -->
+            <div class="user-info">
+                <p class="user-label">Connecté en tant que</p>
+                <p class="user-email" id="userEmail">chargement...</p>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="live">
+                    <i data-lucide="navigation"></i>
+                    <span class="nav-text">Temps réel</span>
+                </button>
+
+                <button class="nav-item" data-view="history">
+                    <i data-lucide="clock"></i>
+                    <span class="nav-text">Historique</span>
+                </button>
+
+                <button class="nav-item" id="manageTrackers">
+                    <i data-lucide="settings"></i>
+                    <span class="nav-text">Gérer trackers</span>
+                </button>
+            </nav>
+
+            <!-- Logout -->
+            <button class="nav-item logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                <span class="nav-text">Déconnexion</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar with Filters -->
+            <div class="topbar">
+                <div class="filter-group">
+                    <i data-lucide="filter"></i>
+                    <span class="filter-label">Filtres:</span>
+                </div>
+
+                <button class="filter-btn active" data-filter="all">
+                    <i data-lucide="circle"></i>
+                    <span>Tous <span id="countAll">(0)</span></span>
+                </button>
+
+                <button class="filter-btn filter-moving" data-filter="moving">
+                    <i data-lucide="car"></i>
+                    <span>En marche <span id="countMoving">(0)</span></span>
+                </button>
+
+                <button class="filter-btn filter-stopped" data-filter="stopped">
+                    <i data-lucide="wifi"></i>
+                    <span>En arrêt <span id="countStopped">(0)</span></span>
+                </button>
+
+                <button class="filter-btn filter-offline" data-filter="offline">
+                    <i data-lucide="wifi-off"></i>
+                    <span>Hors ligne <span id="countOffline">(0)</span></span>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Tracker List -->
+                <div class="tracker-list">
+                    <div class="tracker-list-header">
+                        <h2>Mes Trackers</h2>
+                        <p class="tracker-count" id="trackerCount">0 véhicule(s)</p>
+                    </div>
+
+                    <div id="trackerListContainer" class="tracker-items">
+                        <!-- Les trackers seront injectés ici via JavaScript -->
+                        <div class="loading">Chargement des trackers...</div>
+                    </div>
+                </div>
+
+                <!-- Map Container -->
+                <div class="map-container">
+                    <div id="map"></div>
+
+                    <!-- ========== PANNEAU DE CONTRÔLE D'HISTORIQUE ========== -->
+                    <div id="historyControls" class="history-controls" style="display: none;">
+                        <div class="history-controls-content">
+                            <h3>Contrôles de l'historique</h3>
+                            
+                            <div class="history-date-selector">
+                                <div class="form-group">
+                                    <label for="historyStartDate">Date de début</label>
+                                    <input type="date" id="historyStartDate">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="historyEndDate">Date de fin</label>
+                                    <input type="date" id="historyEndDate">
+                                </div>
+                                
+                                <button class="btn btn-primary btn-small" id="loadHistoryBtn">
+                                    <i data-lucide="refresh-cw"></i>
+                                    <span>Charger</span>
+                                </button>
+                            </div>
+
+                            <div class="history-stats" id="historyStats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Points:</span>
+                                    <span class="stat-value" id="historyPoints">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Distance:</span>
+                                    <span class="stat-value" id="historyDistance">0 km</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Durée:</span>
+                                    <span class="stat-value" id="historyDuration">0h</span>
+                                </div>
+                            </div>
+
+                            <div class="history-actions">
+                                <button class="btn btn-secondary btn-small" id="exportHistoryPDF">
+                                    <i data-lucide="download"></i>
+                                    <span>Exporter PDF</span>
+                                </button>
+                                
+                                <button class="btn btn-danger btn-small" id="deleteHistoryBtn">
+                                    <i data-lucide="trash-2"></i>
+                                    <span>Supprimer historique</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========== FIN PANNEAU HISTORIQUE ========== -->
+
+                    <!-- Info Panel (affiché quand un tracker est sélectionné) -->
+                    <div id="infoPanel" class="info-panel" style="display: none;">
+                        <div class="info-panel-content">
+                            <div class="info-left">
+                                <h3 id="infoPanelName">-</h3>
+                                <p id="infoPanelView">Position actuelle</p>
+                            </div>
+                            <div class="info-right">
+                                <p class="info-speed" id="infoPanelSpeed">0 km/h</p>
+                                <p class="info-battery" id="infoPanelBattery">Batterie: 0%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal pour gérer les trackers -->
+    <div id="trackerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Gérer mes trackers</h2>
+                <button class="modal-close" id="closeModal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Liste des trackers existants -->
+                <div id="trackersList" class="trackers-list-section">
+                    <h3>Mes trackers</h3>
+                    <div id="trackersListContainer">
+                        <div class="loading">Chargement...</div>
+                    </div>
+                    <button class="btn btn-primary" id="addNewTracker">
+                        <i data-lucide="plus"></i>
+                        <span>Ajouter un tracker</span>
+                    </button>
+                </div>
+
+                <!-- Formulaire d'ajout/modification -->
+                <div id="trackerForm" class="tracker-form-section" style="display: none;">
+                    <h3 id="formTitle">Ajouter un tracker</h3>
+                    
+                    <form id="vehicleForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="trackerIMEI">IMEI du Tracker *</label>
+                                <input type="text" id="trackerIMEI" required placeholder="2015070203001">
+                                <small>Numéro IMEI du tracker TK905 (15 chiffres)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vehicleName">Nom du véhicule *</label>
+                                <input type="text" id="vehicleName" required placeholder="Camion Livraison">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vehicleBrand">Marque</label>
+                                <input type="text" id="vehicleBrand" placeholder="Toyota">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vehicleModel">Modèle</label>
+                                <input type="text" id="vehicleModel" placeholder="Hilux">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vehiclePlate">Plaque d'immatriculation</label>
+                                <input type="text" id="vehiclePlate" placeholder="ABC-123-GP">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vehicleColor">Couleur</label>
+                                <input type="text" id="vehicleColor" placeholder="Blanc">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="driverName">Nom du chauffeur</label>
+                                <input type="text" id="driverName" placeholder="Pierre Mbala">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="driverPhone">Téléphone du chauffeur</label>
+                                <input type="tel" id="driverPhone" placeholder="+27 12 345 6789">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vehicleNotes">Notes / Informations supplémentaires</label>
+                            <textarea id="vehicleNotes" rows="3" placeholder="Véhicule de livraison principal..."></textarea>
+                        </div>
+
+                        <div id="formError" class="error-message" style="display: none;"></div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelForm">Annuler</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span id="submitBtnText">Enregistrer</span>
+                                <span id="submitLoader" class="loader" style="display: none;"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/tracker-manager.js"></script>
+    <script src="js/history-manager.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
