@@ -7,6 +7,7 @@
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Reeya&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -23,7 +24,7 @@
                 <button id="toggleSidebar" class="icon-btn">
                     <i data-lucide="menu"></i>
                 </button>
-                <h1 class="sidebar-title">TechnoWeb GPS</h1>
+                <h1 class="sidebar-title">Cartracker</h1>
             </div>
 
             <!-- User Info -->
@@ -87,7 +88,7 @@
                 </button>
             </div>
 
-            <!-- Content Area -->
+            <!-- Content Area display flex colomn mobile -->
             <div class="content-area">
                 <!-- Tracker List -->
                 <div class="tracker-list">
@@ -97,7 +98,7 @@
                     </div>
 
                     <div id="trackerListContainer" class="tracker-items">
-                        <!-- Les trackers seront injectés ici via JavaScript -->
+                        <!-- Les trackers seront injectés ici via JavaScript  display flex space between, overflow-x auto trackerListContainer -->
                         <div class="loading">Chargement des trackers...</div>
                     </div>
                 </div>

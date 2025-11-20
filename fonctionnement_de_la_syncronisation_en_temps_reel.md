@@ -435,4 +435,10 @@ Carte web se met à jour
 ✅ Vous voyez le véhicule bouger en temps réel !
 ```
 
-**C'est magique, mais c'est de la technologie ! 🚀**
+**Pour telecharger une cle service du compte pour le server ! 🚀**
+allez dans la console firebase,
+paramettre du project,
+compte des services,
+en bas, vous verrez: generez une nouvelle cle privee.
+une fois telecharger, renommer ca: serviceAccountKey.json, 
+puis placer ca dans le dossier firebase cote serveur

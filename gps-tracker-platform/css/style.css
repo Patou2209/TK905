@@ -55,8 +55,10 @@ body {
 
 .sidebar-title {
     font-size: 1.125rem;
+    letter-spacing: 2px;
     font-weight: bold;
     white-space: nowrap;
+    font-family: Reey, cursive;
 }
 
 .icon-btn {
@@ -156,7 +158,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: scroll;
 }
 
 /* Top Bar with Filters */
@@ -369,7 +371,7 @@ body {
     border-radius: 0.5rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .info-panel-content {
@@ -642,6 +644,22 @@ body {
 /* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 768px) {
+    .sidebar:not(.sidebar-expanded) {
+    width: 50px;
+    }
+    .sidebar-expanded {
+    width: 200px;
+    }
+    .btn {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.775rem;
+    font-weight: 600;
+    
+    gap: 0.5rem;
+    }
     .tracker-list {
         width: 280px;
     }
@@ -660,24 +678,363 @@ body {
         right: 0.5rem;
         bottom: 0.5rem;
     }
-}
-
-@media (max-width: 640px) {
-    .sidebar-expanded {
-        position: absolute;
-        z-index: 2000;
-        height: 100%;
+    .tracker-list{
+        width: 100%;
+        height:110px;
+        overflow-y: hidden;
     }
-
-    .tracker-list {
-        display: none;
+    .tracker-items{
+        font-size: 0.775rem;
+        display: flex;
+        justify-content: space-between;
+        overflow-x: auto;
+        gap: 0.5rem;
+        width: auto;
+        overflow-x: scroll;
+        
     }
-
+    .content-area {
+        flex-direction: column;
+    }
+    .tracker-list-header h2{
+        font-size: 1rem;
+    }
+    .tracker-list-header {
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        
+    }
+    .topbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
     .topbar {
         flex-wrap: nowrap;
         overflow-x: auto;
     }
+    .info-left h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    }
+
+    .info-left p {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    .info-speed {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .history-controls {
+    top: 0.7rem;
+    right: 1rem;
+    border-radius: 0.7rem;
+    padding: 0.9rem;
+    min-width: 300px;
+    max-width: 350px;
+    }
+
+    .history-controls-content h3 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .history-date-selector {
+        gap: 0.7rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .stat-value {
+    font-size: 1rem;
+    }
+    .history-stats {
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    }
+    .map-container {
+    overflow-y: scroll;
+    }
+    .history-date-selector input[type="date"] {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 14px;
+    }
+    .icon-btn {
+    padding-left: 0;
+    border-radius: 0.375rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+    
+    
+}
+@media (max-width: 480px) {
+    .sidebar:not(.sidebar-expanded) {
+    width: 50px;
+    }
+    .sidebar-expanded {
+    width: 200px;
+    }
+    .btn {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.775rem;
+    font-weight: 600;
+    
+    gap: 0.5rem;
+    }
+    .tracker-list {
+        width: 280px;
+    }
+
+    .topbar {
+        padding: 0.75rem;
+    }
+
+    .filter-btn {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .info-panel {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+    }
+    .tracker-list{
+        width: 100%;
+        height:110px;
+        overflow-y: hidden;
+    }
+    .tracker-items{
+        font-size: 0.775rem;
+        display: flex;
+        justify-content: space-between;
+        overflow-x: auto;
+        gap: 0.5rem;
+        width: auto;
+        overflow-x: scroll;
+        
+    }
+    .content-area {
+        flex-direction: column;
+    }
+    .tracker-list-header h2{
+        font-size: 1rem;
+    }
+    .tracker-list-header {
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        
+    }
+    .topbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .topbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .info-left h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    }
+
+    .info-left p {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    .info-speed {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .history-controls {
+    top: 0.7rem;
+    right: 1rem;
+    border-radius: 0.7rem;
+    padding: 0.9rem;
+    min-width: 300px;
+    max-width: 350px;
+    }
+
+    .history-controls-content h3 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .history-date-selector {
+        gap: 0.7rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .stat-value {
+    font-size: 1rem;
+    }
+    .history-stats {
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    }
+    .map-container {
+    overflow-y: scroll;
+    }
+    .history-date-selector input[type="date"] {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 14px;
+    }
+    .icon-btn {
+    padding-left: 0;
+    border-radius: 0.375rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    
+    
+}
+@media (max-width: 992px) {
+    .sidebar:not(.sidebar-expanded) {
+    width: 50px;
+    }
+    .sidebar-expanded {
+    width: 200px;
+    }
+    .btn {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.775rem;
+    font-weight: 600;
+    
+    gap: 0.5rem;
+    }
+    .tracker-list {
+        width: 280px;
+    }
+
+    .topbar {
+        padding: 0.75rem;
+    }
+
+    .filter-btn {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .info-panel {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+    }
+    .tracker-list{
+        width: 100%;
+        height:110px;
+        overflow-y: hidden;
+    }
+    .tracker-items{
+        font-size: 0.775rem;
+        display: flex;
+        justify-content: space-between;
+        overflow-x: auto;
+        gap: 0.5rem;
+        width: auto;
+        overflow-x: scroll;
+        
+    }
+    .content-area {
+        flex-direction: column;
+    }
+    .tracker-list-header h2{
+        font-size: 1rem;
+    }
+    .tracker-list-header {
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        
+    }
+    .topbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .topbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .info-left h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    }
+
+    .info-left p {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    .info-speed {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .history-controls {
+    top: 0.7rem;
+    right: 1rem;
+    border-radius: 0.7rem;
+    padding: 0.9rem;
+    min-width: 300px;
+    max-width: 350px;
+    }
+
+    .history-controls-content h3 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .history-date-selector {
+        gap: 0.7rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .stat-value {
+    font-size: 1rem;
+    }
+    .history-stats {
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    }
+    .map-container {
+    overflow-y: scroll;
+    }
+    .history-date-selector input[type="date"] {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 14px;
+    }
+    .icon-btn {
+    padding-left: 0;
+    border-radius: 0.375rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    
+    
+}
+
+
 
 /* ==================== MODAL ==================== */
 
