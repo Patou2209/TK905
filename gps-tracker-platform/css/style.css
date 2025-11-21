@@ -1015,6 +1015,7 @@ body {
     }
     .map-container {
     overflow-y: scroll;
+    height: auto;
     }
     .history-date-selector input[type="date"] {
     width: 100%;
