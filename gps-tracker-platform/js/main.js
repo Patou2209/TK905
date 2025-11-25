@@ -1074,3 +1074,4 @@ function getStatusColor(status) {
 }
 
 console.log('Application chargée et prête');
+

@@ -7,7 +7,6 @@
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Reeya&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -24,7 +23,7 @@
                 <button id="toggleSidebar" class="icon-btn">
                     <i data-lucide="menu"></i>
                 </button>
-                <h1 class="sidebar-title">Cartracker</h1>
+                <h1 class="sidebar-title">TechnoWeb GPS</h1>
             </div>
 
             <!-- User Info -->
@@ -45,17 +44,17 @@
                     <span class="nav-text">Historique</span>
                 </button>
 
-                <button class="nav-item logout-btn" id="logoutBtn">
-                    <i data-lucide="log-out"></i>
-                    <span class="nav-text">Déconnexion</span>
-                </button>
-
                 <button class="nav-item" id="manageTrackers">
                     <i data-lucide="settings"></i>
                     <span class="nav-text">Gérer trackers</span>
                 </button>
-                
-            </nav>   
+            </nav>
+
+            <!-- Logout -->
+            <button class="nav-item logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                <span class="nav-text">Déconnexion</span>
+            </button>
         </aside>
 
         <!-- Main Content -->
@@ -88,7 +87,7 @@
                 </button>
             </div>
 
-            <!-- Content Area display flex colomn mobile -->
+            <!-- Content Area -->
             <div class="content-area">
                 <!-- Tracker List -->
                 <div class="tracker-list">
@@ -98,7 +97,7 @@
                     </div>
 
                     <div id="trackerListContainer" class="tracker-items">
-                        <!-- Les trackers seront injectés ici via JavaScript  display flex space between, overflow-x auto trackerListContainer -->
+                        <!-- Les trackers seront injectés ici via JavaScript -->
                         <div class="loading">Chargement des trackers...</div>
                     </div>
                 </div>
@@ -274,6 +273,9 @@
         </div>
     </div>
 
+    
+
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -297,5 +299,7 @@
     <script>
         lucide.createIcons();
     </script>
+    
+
 </body>
 </html>
