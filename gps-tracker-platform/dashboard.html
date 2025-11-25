@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechnoWeb GPS Tracker</title>
+    <title>TechnoWeb carTracker</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Reeya&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    
 </head>
 <body>
-    <!-- Mobile Menu Toggle -->
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-        <i data-lucide="menu"></i>
-    </button>
-
-    <!-- Sidebar Overlay (Mobile) -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <div class="app-container">
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar sidebar-expanded">
@@ -30,7 +24,7 @@
                 <button id="toggleSidebar" class="icon-btn">
                     <i data-lucide="menu"></i>
                 </button>
-                <h1 class="sidebar-title">TechnoWeb GPS</h1>
+                <h1 class="sidebar-title">carTracker</h1>
             </div>
 
             <!-- User Info -->
@@ -55,13 +49,15 @@
                     <i data-lucide="settings"></i>
                     <span class="nav-text">Gérer trackers</span>
                 </button>
-            </nav>
 
-            <!-- Logout -->
-            <button class="nav-item logout-btn" id="logoutBtn">
+                <button class="nav-item logout-btn" id="logoutBtn">
                 <i data-lucide="log-out"></i>
                 <span class="nav-text">Déconnexion</span>
-            </button>
+                </button>
+            </nav>
+
+            
+            
         </aside>
 
         <!-- Main Content -->
@@ -94,7 +90,7 @@
                 </button>
             </div>
 
-            <!-- Content Area -->
+            <!-- Content Area display flex colomn mobile -->
             <div class="content-area">
                 <!-- Tracker List -->
                 <div class="tracker-list">
@@ -104,6 +100,7 @@
                     </div>
 
                     <div id="trackerListContainer" class="tracker-items">
+                        <!-- Les trackers seront injectés ici via JavaScript  display flex space between, overflow-x auto trackerListContainer -->
                         <div class="loading">Chargement des trackers...</div>
                     </div>
                 </div>
@@ -112,7 +109,7 @@
                 <div class="map-container">
                     <div id="map"></div>
 
-                    <!-- History Controls Panel -->
+                    <!-- ========== PANNEAU DE CONTRÔLE D'HISTORIQUE ========== -->
                     <div id="historyControls" class="history-controls" style="display: none;">
                         <div class="history-controls-content">
                             <h3>Contrôles de l'historique</h3>
@@ -162,8 +159,9 @@
                             </div>
                         </div>
                     </div>
+                    <!-- ========== FIN PANNEAU HISTORIQUE ========== -->
 
-                    <!-- Info Panel -->
+                    <!-- Info Panel (affiché quand un tracker est sélectionné) -->
                     <div id="infoPanel" class="info-panel" style="display: none;">
                         <div class="info-panel-content">
                             <div class="info-left">
@@ -289,202 +287,17 @@
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- Custom Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/tracker-manager.js"></script>
+    <script src="js/history-manager.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Initialize Lucide Icons -->
     <script>
-        // ============================================
-        // RESPONSIVE JAVASCRIPT HANDLERS
-        // ============================================
-
-        // Mobile Menu Toggle
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-
-        // Toggle sidebar on mobile
-        mobileMenuToggle.addEventListener('click', () => {
-            sidebar.classList.add('mobile-open');
-            sidebarOverlay.classList.add('active');
-        });
-
-        // Close sidebar when clicking overlay
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // Desktop sidebar collapse/expand
-        toggleSidebar.addEventListener('click', () => {
-            if (window.innerWidth > 768) {
-                sidebar.classList.toggle('sidebar-collapsed');
-            } else {
-                sidebar.classList.remove('mobile-open');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-
-        // Close mobile sidebar when clicking nav items
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('mobile-open');
-                    sidebarOverlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Handle window resize
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if (window.innerWidth > 768) {
-                    sidebar.classList.remove('mobile-open');
-                    sidebarOverlay.classList.remove('active');
-                }
-            }, 250);
-        });
-
-        // Modal handling
-        const trackerModal = document.getElementById('trackerModal');
-        const closeModal = document.getElementById('closeModal');
-        const manageTrackers = document.getElementById('manageTrackers');
-
-        manageTrackers.addEventListener('click', () => {
-            trackerModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        closeModal.addEventListener('click', () => {
-            trackerModal.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-
-        // Close modal when clicking outside
-        trackerModal.addEventListener('click', (e) => {
-            if (e.target === trackerModal) {
-                trackerModal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Navigation view switching
-        const navButtons = document.querySelectorAll('[data-view]');
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all
-                navButtons.forEach(b => b.classList.remove('active'));
-                // Add active to clicked
-                btn.classList.add('active');
-                
-                const view = btn.getAttribute('data-view');
-                
-                // Handle view switching logic here
-                if (view === 'live') {
-                    document.getElementById('historyControls').style.display = 'none';
-                    console.log('Switched to Live view');
-                } else if (view === 'history') {
-                    document.getElementById('historyControls').style.display = 'block';
-                    console.log('Switched to History view');
-                }
-            });
-        });
-
-        // Filter buttons
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const filter = btn.getAttribute('data-filter');
-                console.log('Filter selected:', filter);
-                // Add your filter logic here
-            });
-        });
-
-        // Form show/hide
-        const addNewTracker = document.getElementById('addNewTracker');
-        const trackerForm = document.getElementById('trackerForm');
-        const trackersList = document.getElementById('trackersList');
-        const cancelForm = document.getElementById('cancelForm');
-
-        addNewTracker.addEventListener('click', () => {
-            trackersList.style.display = 'none';
-            trackerForm.style.display = 'block';
-        });
-
-        cancelForm.addEventListener('click', () => {
-            trackerForm.style.display = 'none';
-            trackersList.style.display = 'block';
-        });
-
-        // Form submission
-        const vehicleForm = document.getElementById('vehicleForm');
-        vehicleForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            console.log('Form submitted');
-            // Add your form submission logic here
-        });
-
-        // Initialize Lucide Icons
         lucide.createIcons();
-
-        // Initialize map (basic setup - replace with your actual map initialization)
-        document.addEventListener('DOMContentLoaded', () => {
-            // This is a placeholder - use your actual map.js initialization
-            console.log('App initialized and ready');
-            
-            // Simulate loading user email
-            setTimeout(() => {
-                document.getElementById('userEmail').textContent = 'user@example.com';
-            }, 500);
-        });
-
-        // Prevent body scroll when modal is open
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.target.classList.contains('active')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            });
-        });
-
-        observer.observe(trackerModal, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-
-        // Touch swipe to close sidebar on mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        sidebar.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-
-        sidebar.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            if (touchEndX < touchStartX - 50 && window.innerWidth <= 768) {
-                sidebar.classList.remove('mobile-open');
-                sidebarOverlay.classList.remove('active');
-            }
-        }
     </script>
-
-    <!-- Your custom scripts -->
-    <script src="js/config.js"></script> 
-     <script src="js/auth.js"></script> 
-     <script src="js/map.js"></script> 
-     <script src="js/tracker-manager.js"></script> 
-     <script src="js/history-manager.js"></script> 
-    <script src="js/main.js"></script> 
-
 </body>
 </html>

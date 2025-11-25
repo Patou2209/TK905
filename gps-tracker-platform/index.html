@@ -3,303 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechnoWeb GPS Tracker</title>
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <!-- Custom CSS -->
+    <title>Connexion - TechnoWeb GPS</title>
     <link rel="stylesheet" href="css/style.css">
-    
-    <!-- Lucide Icons -->
+    <link rel="stylesheet" href="css/nav_footer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Reeya&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.2.0/css/line.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+  <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar sidebar-expanded">
-            <!-- Header -->
-            <div class="sidebar-header">
-                <button id="toggleSidebar" class="icon-btn">
-                    <i data-lucide="menu"></i>
-                </button>
-                <h1 class="sidebar-title">TechnoWeb GPS</h1>
-            </div>
-
-            <!-- User Info -->
-            <div class="user-info">
-                <p class="user-label">Connecté en tant que</p>
-                <p class="user-email" id="userEmail">chargement...</p>
-            </div>
-
-            <!-- Navigation Menu -->
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-view="live">
-                    <i data-lucide="navigation"></i>
-                    <span class="nav-text">Temps réel</span>
-                </button>
-
-                <button class="nav-item" data-view="history">
-                    <i data-lucide="clock"></i>
-                    <span class="nav-text">Historique</span>
-                </button>
-
-                <button class="nav-item" id="manageTrackers">
-                    <i data-lucide="settings"></i>
-                    <span class="nav-text">Gérer trackers</span>
-                </button>
-            </nav>
-
-            <!-- Logout -->
-            <button class="nav-item logout-btn" id="logoutBtn">
-                <i data-lucide="log-out"></i>
-                <span class="nav-text">Déconnexion</span>
-            </button>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Bar with Filters -->
-            <div class="topbar">
-                <div class="filter-group">
-                    <i data-lucide="filter"></i>
-                    <span class="filter-label">Filtres:</span>
-                </div>
-
-                <button class="filter-btn active" data-filter="all">
-                    <i data-lucide="circle"></i>
-                    <span>Tous <span id="countAll">(0)</span></span>
-                </button>
-
-                <button class="filter-btn filter-moving" data-filter="moving">
-                    <i data-lucide="car"></i>
-                    <span>En marche <span id="countMoving">(0)</span></span>
-                </button>
-
-                <button class="filter-btn filter-stopped" data-filter="stopped">
-                    <i data-lucide="wifi"></i>
-                    <span>En arrêt <span id="countStopped">(0)</span></span>
-                </button>
-
-                <button class="filter-btn filter-offline" data-filter="offline">
-                    <i data-lucide="wifi-off"></i>
-                    <span>Hors ligne <span id="countOffline">(0)</span></span>
-                </button>
-            </div>
-
-            <!-- Content Area -->
-            <div class="content-area">
-                <!-- Tracker List -->
-                <div class="tracker-list">
-                    <div class="tracker-list-header">
-                        <h2>Mes Trackers</h2>
-                        <p class="tracker-count" id="trackerCount">0 véhicule(s)</p>
-                    </div>
-
-                    <div id="trackerListContainer" class="tracker-items">
-                        <!-- Les trackers seront injectés ici via JavaScript -->
-                        <div class="loading">Chargement des trackers...</div>
-                    </div>
-                </div>
-
-                <!-- Map Container -->
-                <div class="map-container">
-                    <div id="map"></div>
-
-                    <!-- ========== PANNEAU DE CONTRÔLE D'HISTORIQUE ========== -->
-                    <div id="historyControls" class="history-controls" style="display: none;">
-                        <div class="history-controls-content">
-                            <h3>Contrôles de l'historique</h3>
-                            
-                            <div class="history-date-selector">
-                                <div class="form-group">
-                                    <label for="historyStartDate">Date de début</label>
-                                    <input type="date" id="historyStartDate">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="historyEndDate">Date de fin</label>
-                                    <input type="date" id="historyEndDate">
-                                </div>
-                                
-                                <button class="btn btn-primary btn-small" id="loadHistoryBtn">
-                                    <i data-lucide="refresh-cw"></i>
-                                    <span>Charger</span>
-                                </button>
-                            </div>
-
-                            <div class="history-stats" id="historyStats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Points:</span>
-                                    <span class="stat-value" id="historyPoints">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Distance:</span>
-                                    <span class="stat-value" id="historyDistance">0 km</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Durée:</span>
-                                    <span class="stat-value" id="historyDuration">0h</span>
-                                </div>
-                            </div>
-
-                            <div class="history-actions">
-                                <button class="btn btn-secondary btn-small" id="exportHistoryPDF">
-                                    <i data-lucide="download"></i>
-                                    <span>Exporter PDF</span>
-                                </button>
-                                
-                                <button class="btn btn-danger btn-small" id="deleteHistoryBtn">
-                                    <i data-lucide="trash-2"></i>
-                                    <span>Supprimer historique</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ========== FIN PANNEAU HISTORIQUE ========== -->
-
-                    <!-- Info Panel (affiché quand un tracker est sélectionné) -->
-                    <div id="infoPanel" class="info-panel" style="display: none;">
-                        <div class="info-panel-content">
-                            <div class="info-left">
-                                <h3 id="infoPanelName">-</h3>
-                                <p id="infoPanelView">Position actuelle</p>
-                            </div>
-                            <div class="info-right">
-                                <p class="info-speed" id="infoPanelSpeed">0 km/h</p>
-                                <p class="info-battery" id="infoPanelBattery">Batterie: 0%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal pour gérer les trackers -->
-    <div id="trackerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Gérer mes trackers</h2>
-                <button class="modal-close" id="closeModal">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <!-- Liste des trackers existants -->
-                <div id="trackersList" class="trackers-list-section">
-                    <h3>Mes trackers</h3>
-                    <div id="trackersListContainer">
-                        <div class="loading">Chargement...</div>
-                    </div>
-                    <button class="btn btn-primary" id="addNewTracker">
-                        <i data-lucide="plus"></i>
-                        <span>Ajouter un tracker</span>
-                    </button>
-                </div>
-
-                <!-- Formulaire d'ajout/modification -->
-                <div id="trackerForm" class="tracker-form-section" style="display: none;">
-                    <h3 id="formTitle">Ajouter un tracker</h3>
-                    
-                    <form id="vehicleForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="trackerIMEI">IMEI du Tracker *</label>
-                                <input type="text" id="trackerIMEI" required placeholder="2015070203001">
-                                <small>Numéro IMEI du tracker TK905 (15 chiffres)</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="vehicleName">Nom du véhicule *</label>
-                                <input type="text" id="vehicleName" required placeholder="Camion Livraison">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="vehicleBrand">Marque</label>
-                                <input type="text" id="vehicleBrand" placeholder="Toyota">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="vehicleModel">Modèle</label>
-                                <input type="text" id="vehicleModel" placeholder="Hilux">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="vehiclePlate">Plaque d'immatriculation</label>
-                                <input type="text" id="vehiclePlate" placeholder="ABC-123-GP">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="vehicleColor">Couleur</label>
-                                <input type="text" id="vehicleColor" placeholder="Blanc">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="driverName">Nom du chauffeur</label>
-                                <input type="text" id="driverName" placeholder="Pierre Mbala">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="driverPhone">Téléphone du chauffeur</label>
-                                <input type="tel" id="driverPhone" placeholder="+27 12 345 6789">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="vehicleNotes">Notes / Informations supplémentaires</label>
-                            <textarea id="vehicleNotes" rows="3" placeholder="Véhicule de livraison principal..."></textarea>
-                        </div>
-
-                        <div id="formError" class="error-message" style="display: none;"></div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" id="cancelForm">Annuler</button>
-                            <button type="submit" class="btn btn-primary">
-                                <span id="submitBtnText">Enregistrer</span>
-                                <span id="submitLoader" class="loader" style="display: none;"></span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <nav>
+      <div class="nav_container">
+         <a href="#" class="logo">
+            carTracker 
+            <i data-lucide="map-pin"></i> 
+         </a>
+         
+         <ul class="nav_menu">
+            <li><a href="index.html" class="nav_col a">Home </a></li>
+            <li><a href="consultance.html" class="nav_col">Services </a></li>
+            <li><a href="construction.html" class="nav_col ">A propos </a></li>
+            <li><a href="contact.html" class="nav_col">Contact </a></li>
+         </ul>
+         
+         <button id="open-menu-btn">
+            <i class="uil uil-bars"></i>
+         </button>
+         <button id="close-menu-btn">
+            <i class="uil uil-multiply"></i>
+         </button>
+      </div>
+   </nav>
+    <div class="auth-body">
+    <div class="auth_left">
+        <h2>Bienvenue sur</h2>
+        <h1>CarTracker</h1>
+        <p>Votre solution de suivi GPS en temps réel</p>
+        <div class="auth_buttons">
+            <button class="btn">En savoir plus</button>
+            <button class="btn">Contactez-nous</button>
         </div>
     </div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <h2>Connexion</h2>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="votre@email.com">
+                </div>
 
-    
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
 
-    
+                <div id="loginError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="loginBtnText">Se connecter</span>
+                    <span id="loginLoader" class="loader" style="display: none;"></span>
+                </button>
+
+                <p class="auth-switch">
+                    Pas encore de compte ? 
+                    <a href="#" id="showRegister">Créer un compte</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <h2>Créer un compte</h2>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required placeholder="votre@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+                    <small>Minimum 6 caractères</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmer le mot de passe</label>
+                    <input type="password" id="registerPasswordConfirm" required placeholder="••••••••">
+                </div>
+
+                <div id="registerError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="registerBtnText">Créer mon compte</span>
+                    <span id="registerLoader" class="loader" style="display: none;"></span>
+                </button>
+
+                <p class="auth-switch">
+                    Déjà un compte ? 
+                    <a href="#" id="showLogin">Se connecter</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    </div>
+    <div class="block">
+        <h3>
+            Qui sommes-nous ? 
+            <i data-lucide="badge-info"></i>
+        </h3>
+        <p>TechnoWeb GPS est une entreprise spécialisée dans les solutions de suivi GPS pour véhicules. Nous offrons des services innovants pour assurer la sécurité et la gestion efficace de votre flotte.</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita suscipit corporis eum at minus voluptas laborum? Dolorum, sequi. Ad tempore asperiores odio quo, repudiandae nihil fugit mollitia excepturi dignissimos nemo. Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum maxime repellat eligendi velit cumque, dignissimos commodi expedita necessitatibus! Corrupti perferendis nostrum at perspiciatis nesciunt repellendus. Quis odio doloremque perspiciatis incidunt.</p>
+    </div>
+    <div class="block">
+        <h3>
+            Nos services
+            <i data-lucide="settings"></i>
+        </h3>
+        <p>Découvrez nos solutions adaptées à vos besoins pour optimiser la gestion de votre flotte et assurer la sécurité de vos véhicules.</p>
+        <ul>
+            <li>Suivi en temps réel des véhicules</li>
+            <li>Alertes de sécurité personnalisées</li>
+            <li>Rapports détaillés sur les trajets</li>
+            <li>Gestion de flotte simplifiée</li>
+        </ul>
+    </div>
+    <div class="block">
+        <h3>
+            Notre vision
+            <i data-lucide="eye"></i>
+        </h3>
+        <p>Chez TechnoWeb GPS, nous croyons en l'innovation continue pour offrir les meilleures solutions de suivi GPS. Notre objectif est de devenir le leader du marché en fournissant des services fiables et performants.</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Harum, reiciendis! Quisquam, quod. Harum, reiciendis! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Harum, reiciendis! Quisquam, quod. Harum, reiciendis!</p>
+    </div>
+    <div class="block">
+        <h3>
+            Notre équipe
+            <i data-lucide="users"></i>
+        </h3>
+        <p>Rencontrez les experts passionnés derrière TechnoWeb GPS, dédiés à fournir des solutions de suivi GPS de qualité supérieure.</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Harum, reiciendis! Quisquam, quod. Harum, reiciendis! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Harum, reiciendis! Quisquam, quod. Harum, reiciendis!</p>
+    </div>
+
+      <footer>
+            <section id="footer">
+
+                <div class="footer-col">
+                    <h3>Contact</h3>
+                    <li>Adresse:  Bureau 05, Bandudi Tower, 172 avenue Dodoma, <br> Q/Mongala, C/Kinshasa, ville de Kinshasa, RD Congo</li>
+                    <li>+243 000 000 000</li>
+                    <li>Ouvert du Lundi au Vendredi: 08:00 - 17:00, Lun - Ven</li>
+                </div>
+
+                <div class="footer-col">
+                    <h3>A Propos</h3>
+                    <li>Consultance</li>
+                    <li>services</li>
+                    <li>Gestion des flottes</li>
+                    
+                </div>
+
+                <div class="footer-col">
+                    <h3>News letter</h3>
+                    <p>Inscrivez-vous à notre newsletter</p>
+                    <div class="subscribe">
+                        <input type="text" placeholder="Entrez votre email">
+                        <a href="#" class="yellow">S'ABONNER</a>
+                    </div>
+                </div>
+
+                <div class="copyright">
+                <p class="technoweb">© 2025 CARTRACKER. Tous droits réservés. <br>Développé par <a href="https://wa.me/+27698089022"> Technoweb</a></p>
+
+                <div class="pro-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            </section>
+
+  </footer>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- jsPDF for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <!-- Custom Scripts -->
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/tracker-manager.js"></script>
-    <script src="js/history-manager.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/simple.js"></script>
 
+    <script>
+        // Toggle between login and register forms
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+
+        // Handle Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const btnText = document.getElementById('loginBtnText');
+            const loader = document.getElementById('loginLoader');
+
+            // Show loader
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            errorDiv.style.display = 'none';
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                // Redirect handled by auth state observer
+            } catch (error) {
+                errorDiv.textContent = getErrorMessage(error.code);
+                errorDiv.style.display = 'block';
+                btnText.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Handle Register
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+            const errorDiv = document.getElementById('registerError');
+            const btnText = document.getElementById('registerBtnText');
+            const loader = document.getElementById('registerLoader');
+
+            // Check password match
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Les mots de passe ne correspondent pas.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Show loader
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            errorDiv.style.display = 'none';
+
+            try {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+                // Redirect handled by auth state observer
+            } catch (error) {
+                errorDiv.textContent = getErrorMessage(error.code);
+                errorDiv.style.display = 'block';
+                btnText.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        function getErrorMessage(code) {
+            switch (code) {
+                case 'auth/email-already-in-use':
+                    return 'Cet email est déjà utilisé.';
+                case 'auth/invalid-email':
+                    return 'Email invalide.';
+                case 'auth/weak-password':
+                    return 'Mot de passe trop faible.';
+                case 'auth/user-not-found':
+                    return 'Utilisateur introuvable.';
+                case 'auth/wrong-password':
+                    return 'Mot de passe incorrect.';
+                default:
+                    return 'Une erreur est survenue. Veuillez réessayer.';
+            }
+        }
+    </script>
     <!-- Initialize Lucide Icons -->
     <script>
         lucide.createIcons();
     </script>
-    
-
 </body>
 </html>

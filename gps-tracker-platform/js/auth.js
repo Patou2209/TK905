@@ -8,9 +8,9 @@ firebase.auth().onAuthStateChanged((user) => {
         // L'utilisateur est connecté
         console.log('Utilisateur connecté:', user.email);
         
-        // Si on est sur la page de login, rediriger vers index.html
-        if (currentPage === 'login.html' || currentPage === '') {
-            window.location.href = 'index.html';
+        // Si on est sur la page de index, rediriger vers dashboard.html
+        if (currentPage === 'index.html' || currentPage === '') {
+            window.location.href = 'dashboard.html';
         }
         
         // Afficher l'email de l'utilisateur dans la sidebar
@@ -27,8 +27,8 @@ firebase.auth().onAuthStateChanged((user) => {
         console.log('Utilisateur non connecté');
         
         // Si on n'est pas sur la page de login, rediriger
-        if (currentPage !== 'login.html' && currentPage !== '') {
-            window.location.href = 'login.html';
+        if (currentPage !== 'index.html' && currentPage !== '') {
+            window.location.href = 'index.html';
         }
     }
 });
@@ -55,13 +55,15 @@ function createUserInDatabase(user) {
 
 // Fonction de déconnexion
 function logout() {
-    firebase.auth().signOut().then(() => {
-        console.log('Déconnexion réussie');
-        window.location.href = 'login.html';
-    }).catch((error) => {
-        console.error('Erreur lors de la déconnexion:', error);
-        alert('Erreur lors de la déconnexion');
-    });
+    if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+        firebase.auth().signOut().then(() => {
+            console.log('Déconnexion réussie');
+            window.location.href = 'index.html'; // ici a la place de index etait login
+        }).catch((error) => {
+            console.error('Erreur lors de la déconnexion:', error);
+            alert('Erreur lors de la déconnexion');
+        });
+    }
 }
 
 // Attacher l'événement de déconnexion au bouton
